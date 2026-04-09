@@ -196,6 +196,26 @@ function updateChars(stepId) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// SESSION INIT
+// ═══════════════════════════════════════════════════════════
+function initSession(project, round, entryStep) {
+  console.log('Initializing session:', { project, round, entryStep });
+  
+  // 设置当前Project和Round信息
+  document.getElementById('table-topic-text').textContent = project.name;
+  
+  // 根据entryStep进入对应的步骤
+  const stepMap = {
+    'context': 's1',
+    'dialogue': 's3',
+    'summary': 's7'
+  };
+  
+  const stepId = stepMap[entryStep] || 's1';
+  show(stepId);
+}
+
+// ═══════════════════════════════════════════════════════════
 // UTILS
 // ═══════════════════════════════════════════════════════════
 function togglePCheck(el) {

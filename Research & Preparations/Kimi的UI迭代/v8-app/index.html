@@ -25,7 +25,7 @@
         </div>
         
         <div class="enter-bar">
-            <button id="enter-btn" class="enter-button">进入圆桌</button>
+            <button id="enter-btn" class="enter-button" onclick="enterSession()">进入圆桌</button>
         </div>
     </div>
 
@@ -369,16 +369,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>选择轮次</h3>
-                <button class="modal-close">&times;</button>
+                <button class="modal-close" onclick="closeRoundModal()">&times;</button>
             </div>
-            <div class="modal-body">
-                <div class="round-options">
-                    <button class="round-option" data-round="1">第1轮</button>
-                    <button class="round-option" data-round="2">第2轮</button>
-                    <button class="round-option" data-round="3">第3轮</button>
-                    <button class="round-option" data-round="4">第4轮</button>
-                    <button class="round-option" data-round="5">第5轮</button>
-                </div>
+            <div class="modal-body" id="round-list">
+                <!-- Round列表由JS动态生成 -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeRoundModal()">取消</button>
+                <button class="btn-confirm" onclick="confirmRound()">确认进入</button>
             </div>
         </div>
     </div>
@@ -389,7 +387,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>新建 Project</h3>
-                <button class="modal-close">&times;</button>
+                <button class="modal-close" onclick="closeRoundModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="new-project-form">

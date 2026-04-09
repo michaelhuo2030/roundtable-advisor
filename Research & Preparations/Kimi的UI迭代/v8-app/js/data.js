@@ -372,26 +372,26 @@ const PACKAGES_DATA = {
         id: 'p1',
         name: '产品方向验证',
         rounds: [
-          { id: 'r1', name: '第一轮：用户需求验证', date: '2024-01-15' },
-          { id: 'r2', name: '第二轮：MVP功能取舍', date: '2024-02-01' },
-          { id: 'r3', name: '第三轮：商业模式调整', date: '2024-02-20' }
+          { id: 'r1', title: '第一轮：用户需求验证', date: '2024-01-15', status: 'completed', progress: 100 },
+          { id: 'r2', title: '第二轮：MVP功能取舍', date: '2024-02-01', status: 'completed', progress: 100 },
+          { id: 'r3', title: '第三轮：商业模式调整', date: '2024-02-20', status: 'active', progress: 65 }
         ]
       },
       '项目2-合伙人评估': {
         id: 'p2',
         name: '合伙人评估',
         rounds: [
-          { id: 'r1', name: '第一轮：能力与互补性', date: '2024-01-20' },
-          { id: 'r2', name: '第二轮：股权分配方案', date: '2024-02-10' }
+          { id: 'r1', title: '第一轮：能力与互补性', date: '2024-01-20', status: 'completed', progress: 100 },
+          { id: 'r2', title: '第二轮：股权分配方案', date: '2024-02-10', status: 'active', progress: 40 }
         ]
       },
       '项目3-要不要全职创业': {
         id: 'p3',
         name: '要不要全职创业',
         rounds: [
-          { id: 'r1', name: '第一轮：风险与收益评估', date: '2024-01-25' },
-          { id: 'r2', name: '第二轮：时机选择', date: '2024-02-15' },
-          { id: 'r3', name: '第三轮：备选方案设计', date: '2024-03-01' }
+          { id: 'r1', title: '第一轮：风险与收益评估', date: '2024-01-25', status: 'completed', progress: 100 }
+          { id: 'r2', title: '第二轮：时机选择', date: '2024-02-15', status: 'completed', progress: 100 }
+          { id: 'r3', title: '第三轮：备选方案设计', date: '2024-03-01', status: 'active', progress: 20 }
         ]
       }
     }
@@ -404,17 +404,17 @@ const PACKAGES_DATA = {
         id: 'p1',
         name: '是否接受海外调动',
         rounds: [
-          { id: 'r1', name: '第一轮：职业发展影响', date: '2024-01-10' },
-          { id: 'r2', name: '第二轮：家庭与个人考量', date: '2024-01-30' }
+          { id: 'r1', title: '第一轮：职业发展影响', date: '2024-01-10', status: 'completed', progress: 100 }
+          { id: 'r2', title: '第二轮：家庭与个人考量', date: '2024-01-30', status: 'active', progress: 55 }
         ]
       },
       '项目2-转行AI可行性': {
         id: 'p2',
         name: '转行AI可行性',
         rounds: [
-          { id: 'r1', name: '第一轮：技能差距分析', date: '2024-02-05' },
-          { id: 'r2', name: '第二轮：转型路径规划', date: '2024-02-25' },
-          { id: 'r3', name: '第三轮：机会成本评估', date: '2024-03-10' }
+          { id: 'r1', title: '第一轮：技能差距分析', date: '2024-02-05', status: 'completed', progress: 100 }
+          { id: 'r2', title: '第二轮：转型路径规划', date: '2024-02-25', status: 'completed', progress: 100 }
+          { id: 'r3', title: '第三轮：机会成本评估', date: '2024-03-10', status: 'active', progress: 30 }
         ]
       }
     }
