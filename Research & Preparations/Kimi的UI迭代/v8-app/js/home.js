@@ -16,9 +16,10 @@ function renderPackages() {
 
     let html = '';
     
-    PACKAGES_DATA.forEach(pkg => {
-        const isExpanded = pkg.projects.length > 0;
-        const projectCount = pkg.projects.length;
+    Object.values(PACKAGES_DATA).forEach(pkg => {
+        const projectsArray = Object.values(pkg.projects);
+        const isExpanded = projectsArray.length > 0;
+        const projectCount = projectsArray.length;
         
         html += `
             <div class="package-section" data-package-id="${pkg.id}">
@@ -44,7 +45,7 @@ function renderPackages() {
                 <!-- Projects Container -->
                 <div class="projects-container ${isExpanded ? 'expanded' : ''}" id="projects-${pkg.id}">
                     <div class="projects-grid">
-                        ${pkg.projects.map(project => renderProjectCard(project)).join('')}
+                        ${projectsArray.map(project => renderProjectCard(project)).join('')}
                         ${renderNewProjectCard(pkg.id)}
                     </div>
                 </div>
@@ -142,8 +143,9 @@ function selectProject(projectId) {
     
     // 查找project数据
     let project = null;
-    for (const pkg of PACKAGES_DATA) {
-        project = pkg.projects.find(p => p.id === projectId);
+    for (const pkg of Object.values(PACKAGES_DATA)) {
+        const projectsArray = Object.values(pkg.projects);
+        project = projectsArray.find(p => p.id === projectId);
         if (project) break;
     }
     
@@ -174,12 +176,12 @@ function updateEnterButton(enabled) {
 
 function showRoundModal(project) {
     const modal = document.getElementById('round-modal');
-    const title = document.getElementById('modal-project-title');
-    const list = document.getElementById('round-list');
+    const header = document.querySelector('#round-modal .modal-header h3');
+    const list = document.querySelector('#round-modal .modal-body');
     
-    if (!modal || !title || !list) return;
+    if (!modal || !header || !list) return;
     
-    title.textContent = project.name;
+    header.textContent = project.name;
     
     let html = '';
     
@@ -279,11 +281,11 @@ function confirmRound() {
 
 function createNewProject(packageId) {
     // 查找package信息
-    const pkg = PACKAGES_DATA.find(p => p.id === packageId);
+    const pkg = Object.values(PACKAGES_DATA).find(p => p.id === packageId);
     
     // 显示创建弹窗
     const modal = document.getElementById('new-project-modal');
-    const packageSelect = document.getElementById('new-project-package');
+    const packageSelect = document.getElementById('project-package');
     
     if (packageSelect && pkg) {
         packageSelect.value = packageId;
@@ -295,7 +297,7 @@ function createNewProject(packageId) {
         
         // 聚焦输入框
         setTimeout(() => {
-            const input = document.getElementById('new-project-name');
+            const input = document.getElementById('project-name');
             if (input) input.focus();
         }, 100);
     }
@@ -311,13 +313,13 @@ function closeNewProjectModal() {
     }
     
     // 清空输入
-    const input = document.getElementById('new-project-name');
+    const input = document.getElementById('project-name');
     if (input) input.value = '';
 }
 
 function submitNewProject() {
-    const nameInput = document.getElementById('new-project-name');
-    const packageSelect = document.getElementById('new-project-package');
+    const nameInput = document.getElementById('project-name');
+    const packageSelect = document.getElementById('project-package');
     
     const name = nameInput?.value.trim();
     const packageId = packageSelect?.value;
@@ -328,7 +330,7 @@ function submitNewProject() {
     }
     
     // 查找package
-    const pkg = PACKAGES_DATA.find(p => p.id === packageId);
+    const pkg = Object.values(PACKAGES_DATA).find(p => p.id === packageId);
     if (!pkg) return;
     
     // 创建新project
@@ -340,7 +342,7 @@ function submitNewProject() {
     };
     
     // 添加到数据
-    pkg.projects.push(newProject);
+    pkg.projects[newProject.id] = newProject;
     
     // 重新渲染
     renderPackages();
@@ -389,13 +391,13 @@ function enterSession() {
     }
     
     // 隐藏首页
-    const homePage = document.getElementById('home-page');
+    const homePage = document.getElementById('home');
     if (homePage) {
         homePage.style.display = 'none';
     }
     
     // 显示主应用
-    const mainApp = document.getElementById('main-app');
+    const mainApp = document.getElementById('main');
     if (mainApp) {
         mainApp.style.display = 'flex';
     }
@@ -434,8 +436,8 @@ function determineEntryStep(round) {
 
 // 返回首页
 function backToHome() {
-    const homePage = document.getElementById('home-page');
-    const mainApp = document.getElementById('main-app');
+    const homePage = document.getElementById('home');
+    const mainApp = document.getElementById('main');
     
     if (homePage) homePage.style.display = 'flex';
     if (mainApp) mainApp.style.display = 'none';
