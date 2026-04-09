@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════
-let curStep = 's1';
+let mainCurStep = 's1';
 let curLayout = 'A';
 let panelMode = 'step'; // 'step' | 'profile' | 'wiki' | 'status'
 let panelData = null;
@@ -15,9 +15,6 @@ let panelData = null;
 // INIT
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  // 初始化首页
-  renderPackages();
-  
   // 初始化星环节点位置
   initRingPositions();
   
@@ -38,7 +35,7 @@ function setLayout(layout) {
   document.getElementById('lt-B').classList.toggle('on', layout === 'B');
   
   // S3浮动卡片需要重新渲染
-  if (curStep === 's3') {
+  if (mainCurStep === 's3') {
     renderS3Step();
   }
 }
@@ -105,7 +102,7 @@ function updateModeBar(mode) {
   }
   
   if (mode === 'step') {
-    const idx = STEPS.findIndex(s => s.id === curStep);
+    const idx = STEPS.findIndex(s => s.id === mainCurStep);
     el.textContent = '第' + (idx + 1) + '步：' + STEPS[idx].label;
     return;
   }
