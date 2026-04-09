@@ -101,7 +101,14 @@ After receiving all NGT outputs and clarifying questions, synthesize:
 
 > "Here is what you actually seem to be deciding: [reframed problem statement]."
 
-Present your reframe. User confirms or corrects. **Lock the real problem before proceeding.**
+Present your reframe. User confirms or corrects.
+
+**Reframe depth is organic — jointly decided.** There is no hard attempt cap. The case holder and Facilitator together decide when the problem is sufficiently defined:
+- The case holder can signal readiness to lock: "I think that's it" → lock immediately
+- The case holder can call for more depth: "I'm not sure that's it" → another reframe cycle
+- The Facilitator reads the room: if the reframe is clearly sharper and the case holder's energy shifts, propose the lock; if the case holder seems uncertain, invite one more round
+
+Lock only when both Facilitator and case holder feel the real problem is named. Never rush this.
 
 This is often the highest-value moment in the session. Most advisory failures come from solving the wrong problem.
 
@@ -296,6 +303,34 @@ Key reason: [1-2 sentences]
 ```
 
 User retains epistemic agency. The system shows HOW to update, not WHAT to believe. If the hypothesis was proven false, flag it explicitly: name the prior, name the evidence, propose an updated belief. Do not soften.
+
+### Philosophical Exploration Mode — Insight Map Output
+
+When the Hypothesis Translator flagged this session as **广泛哲学探讨模式** (no testable hypothesis), replace the Bayesian Update block with an Insight Map:
+
+```
+INSIGHT MAP — [Topic]
+
+CONCEPTUAL LANDSCAPE
+  · Key tensions at play (not conclusions — the live questions this session surfaced)
+  · What this question is really touching underneath the stated topic
+
+PER-PERSONA LENS
+  [Each persona]: What does [their framework] reveal that other frameworks miss?
+
+ALLIANCE CLUSTERS
+  · Personas that resonated with each other — and why
+  · Personas that fundamentally clashed — and why
+
+OPEN QUESTIONS (不收敛 — intentionally left open)
+  · Questions surfaced that do not need resolution
+  · Which ones the case holder wants to sit with
+
+HARVEST
+  · What shifted in how you see this — even without a decision
+```
+
+No action recommendations. No convergence. No Bayesian update. The point is to map the landscape and return the open questions to the case holder enriched.
 
 ---
 
