@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>参谋 · Counsel AI · PPT Preview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #111;
+    font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    color: #fff;
+    padding: 20px;
+  }
+
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.9);
+    border-bottom: 1px solid #00F3A8;
+    padding: 10px 20px;
+    display: flex;
+    gap: 12px;
+    z-index: 100;
+    overflow-x: auto;
+  }
+  .nav button {
+    background: transparent;
+    border: 1px solid #333;
+    color: #aaa;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    border-radius: 4px;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .nav button:hover, .nav button.active {
+    border-color: #00F3A8;
+    color: #00F3A8;
+  }
+
+  .slides-container {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  /* Each slide: 4:1 ratio */
+  .slide {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4.15 / 1;
+    background: #000;
+    border: 1px solid #1a1a1a;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    scroll-margin-top: 70px;
+  }
+
+  /* Data stream background */
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 35%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent 0%, rgba(0,243,168,0.03) 50%, rgba(0,243,168,0.12) 100%);
+    pointer-events: none;
+  }
+
+  /* Slide number badge */
+  .slide-num {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: #00F3A8;
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 2px;
+    z-index: 10;
+  }
+
+  /* Left title block */
+  .slide-left {
+    width: 28%;
+    padding: 6% 4% 6% 6%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 1px solid #111;
+    flex-shrink: 0;
+  }
+  .slide-title {
+    font-size: clamp(18px, 3vw, 42px);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+  }
+  .slide-title .green { color: #00F3A8; }
+  .slide-title .white { color: #fff; }
+  .slide-title .dim { color: #666; font-size: 0.5em; font-weight: 400; letter-spacing: 2px; display: block; margin-top: 8px; }
+
+  /* Right description */
+  .slide-right {
+    width: 18%;
+    padding: 8% 3%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-left: 1px solid #111;
+    flex-shrink: 0;
+  }
+  .desc-line {
+    font-size: clamp(9px, 0.9vw, 13px);
+    color: #888;
+    line-height: 1.6;
+    margin-bottom: 6px;
+  }
+  .desc-line span { color: #00F3A8; }
+
+  /* Center content */
+  .slide-center {
+    flex: 1;
+    padding: 5% 3%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  /* ── SLIDE 1 styles ── */
+  .role-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+  .role-icon {
+    width: clamp(36px, 5vw, 64px);
+    height: clamp(36px, 5vw, 64px);
+    border: 2px solid #00F3A8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(16px, 2.5vw, 28px);
+  }
+  .role-label {
+    font-size: clamp(9px, 0.85vw, 12px);
+    color: #00F3A8;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .role-desc {
+    font-size: clamp(8px, 0.7vw, 10px);
+    color: #666;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .role-divider {
+    width: 1px;
+    height: 60%;
+    background: #1a1a1a;
+  }
+
+  /* ── SLIDE 2 styles ── */
+  .circles-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    height: 100%;
+    width: 100%;
+  }
+  .circle {
+    border: 2px solid #00F3A8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: clamp(8px, 0.75vw, 11px);
+    color: #ccc;
+    line-height: 1.3;
+    padding: 8px;
+    flex-shrink: 0;
+  }
+  .circle.big { width: clamp(80px, 11vw, 130px); height: clamp(80px, 11vw, 130px); }
+  .circle.med { width: clamp(64px, 9vw, 110px); height: clamp(64px, 9vw, 110px); }
+  .circle.sml { width: clamp(54px, 7vw, 90px); height: clamp(54px, 7vw, 90px); font-size: clamp(7px, 0.65vw, 10px); }
+  .circle.green-fill { background: rgba(0,243,168,0.1); }
+
+  /* ── SLIDE 3 styles ── */
+  .cards-area {
+    display: flex;
+    gap: 12px;
+    height: 100%;
+    width: 100%;
+    align-items: stretch;
+  }
+  .card-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .card-header {
+    font-size: clamp(10px, 1vw, 14px);
+    font-weight: 700;
+    color: #00F3A8;
+    border-bottom: 1px solid #00F3A8;
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+  }
+  .card-module {
+    background: #0a0a0a;
+    border: 1px solid #1e1e1e;
+    border-radius: 4px;
+    padding: 8px 10px;
+    flex: 1;
+  }
+  .card-module-title {
+    font-size: clamp(8px, 0.8vw, 11px);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .card-module-desc {
+    font-size: clamp(7px, 0.65vw, 9px);
+    color: #666;
+    line-height: 1.5;
+  }
+  .card-module-desc span { color: #00F3A8; }
+
+  /* ── SLIDE 4 styles ── */
+  .screenshots-area {
+    display: flex;
+    gap: 10px;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+  }
+  .screenshot-card {
+    flex: 1;
+    height: 80%;
+    background: #0a0a0a;
+    border: 1px solid #222;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .screenshot-img {
+    flex: 1;
+    background: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Courier New', monospace;
+    font-size: clamp(6px, 0.55vw, 8px);
+    color: #00F3A8;
+    padding: 8px;
+    text-align: left;
+    line-height: 1.5;
+    white-space: pre;
+    overflow: hidden;
+  }
+  .screenshot-caption {
+    padding: 5px 8px;
+    font-size: clamp(7px, 0.6vw, 9px);
+    color: #666;
+    border-top: 1px solid #1a1a1a;
+    line-height: 1.4;
+  }
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .tag {
+    background: rgba(0,243,168,0.1);
+    border: 1px solid rgba(0,243,168,0.3);
+    color: #00F3A8;
+    font-size: clamp(6px, 0.55vw, 8px);
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+
+  /* ── SLIDE 5 styles ── */
+  .metrics-area {
+    display: flex;
+    gap: 16px;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+  }
+  .metric-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 8px;
+    border-top: 3px solid #00F3A8;
+  }
+  .metric-arrow {
+    font-size: clamp(18px, 2.5vw, 36px);
+    color: #00F3A8;
+  }
+  .metric-number {
+    font-size: clamp(24px, 4vw, 56px);
+    font-weight: 900;
+    color: #00F3A8;
+    line-height: 1;
+  }
+  .metric-desc {
+    font-size: clamp(8px, 0.75vw, 11px);
+    color: #888;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .metric-future {
+    width: 100%;
+    border-top: 1px solid #1a1a1a;
+    padding-top: 8px;
+    font-size: clamp(7px, 0.65vw, 10px);
+    color: #555;
+    text-align: center;
+    line-height: 1.6;
+  }
+  .metric-future span { color: #00F3A8; }
+
+  /* ── SLIDE 6 styles ── */
+  .thanks-area {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .thanks-text {
+    font-size: clamp(40px, 8vw, 120px);
+    font-weight: 900;
+    letter-spacing: 8px;
+    color: #fff;
+    text-transform: uppercase;
+  }
+  .thanks-sub {
+    font-size: clamp(12px, 1.5vw, 22px);
+    color: #00F3A8;
+    letter-spacing: 4px;
+  }
+
+  /* Iterate hint */
+  .iterate-hint {
+    text-align: center;
+    color: #333;
+    font-size: 12px;
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <button class="active" onclick="scrollTo(1)">P1 · 我们是谁</button>
+  <button onclick="scrollTo(2)">P2 · 为什么做</button>
+  <button onclick="scrollTo(3)">P3 · 帮谁解决</button>
+  <button onclick="scrollTo(4)">P4 · 高光时刻</button>
+  <button onclick="scrollTo(5)">P5 · 后续计划</button>
+  <button onclick="scrollTo(6)">P6 · THANKS</button>
+</nav>
+
+<div class="slides-container">
+
+  <!-- SLIDE 1 -->
+  <div class="slide" id="slide1">
+    <div class="slide-num">01</div>
+    <div class="slide-left">
+      <div class="slide-title">
+        <span class="white">我们</span><span class="green">是谁</span>
+        <span class="dim">WHO WE ARE</span>
+      </div>
+    </div>
+    <div class="slide-center">
+      <div class="role-card">
+        <div class="role-icon">🧠</div>
+        <div class="role-label">产品战略</div>
+        <div class="role-desc">Michael<br>脑科学+经济学<br>硅谷创业5年</div>
+      </div>
+      <div class="role-divider"></div>
+      <div class="role-card">
+        <div class="role-icon">⚡</div>
+        <div class="role-label">AI工程</div>
+        <div class="role-desc">蒋鲤<br>全栈开发<br>AI内容系统</div>
+      </div>
+      <div class="role-divider"></div>
+      <div class="role-card">
+        <div class="role-icon">📡</div>
+        <div class="role-label">用户增长</div>
+        <div class="role-desc">蒋鲤<br>小红书3万粉<br>内容生态运营</div>
+      </div>
+    </div>
+    <div class="slide-right">
+      <div class="desc-line">一个前神经科学研究员</div>
+      <div class="desc-line">+ 一个AI独立开发者</div>
+      <div class="desc-line"><span>我们给自己造了一个外脑</span></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2 -->
+  <div class="slide" id="slide2">
+    <div class="slide-num">02</div>
+    <div class="slide-left">
+      <div class="slide-title">
+        <span class="white">怎么决定</span><br>
+        <span class="green">做这个的</span>
+        <span class="dim">THE ORIGIN</span>
+      </div>
+    </div>
+    <div class="slide-center">
+      <div class="circles-area">
+        <div class="circle big green-fill">顾问是<br>生命路径<br>的囚徒</div>
+        <div class="circle med">亲密关系<br>与客观性<br>不能共存</div>
+        <div class="circle big green-fill">人脑无法<br>同时持有<br>12种框架</div>
+        <div class="circle sml">AI终于能<br>理解哲学<br>体系了</div>
+      </div>
+    </div>
+    <div class="slide-right">
+      <div class="desc-line">第一天做桌面伴侣</div>
+      <div class="desc-line">晚上10点，我们推翻了它</div>
+      <div class="desc-line"><span>因为我们自己就是最需要它的人</span></div>
+      <br>
+      <div class="desc-line" style="font-size:clamp(7px,0.6vw,9px);color:#444">不是市场调研出来的<br>是凌晨4点自己最需要的那一刻</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 -->
+  <div class="slide" id="slide3">
+    <div class="slide-num">03</div>
+    <div class="slide-left">
+      <div class="slide-title">
+        <span class="white">帮谁</span><br>
+        <span class="green">解决什么</span>
+        <span class="dim">THE PROBLEM</span>
+      </div>
+    </div>
+    <div class="slide-center">
+      <div class="cards-area">
+        <div class="card-col">
+          <div class="card-header">高风险决策者</div>
+          <div class="card-module">
+            <div class="card-module-title">你的顾问只活过他自己那条路</div>
+            <div class="card-module-desc">他给不了他没走过的那条建议<br><span>你信任他，但他的视野就是他的上限</span></div>
+          </div>
+          <div class="card-module">
+            <div class="card-module-title">一个人只能看到一个点</div>
+            <div class="card-module-desc">地图上有10条生存线<br>你不知道另外9条的存在<br><span>你以为是死局，其实没开图</span></div>
+          </div>
+        </div>
+        <div class="card-col">
+          <div class="card-header">想成长但困在原地的人</div>
+          <div class="card-module">
+            <div class="card-module-title">想到 ≠ 做到</div>
+            <div class="card-module-desc">想法很好，但没有人追踪你有没有真的做<br><span>承诺说出口，下一个session就忘了</span></div>
+          </div>
+          <div class="card-module">
+            <div class="card-module-title">盲区是看不见的</div>
+            <div class="card-module-desc">你自己的盲点，自己永远发现不了<br><span>需要12种完全不同的眼睛同时照进来</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-right">
+      <div class="desc-line">一个人扛着重大决策</div>
+      <div class="desc-line">找不到真正懂你处境的人</div>
+      <div class="desc-line"><span>开不了地图，死循环在那一个点里</span></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 -->
+  <div class="slide" id="slide4">
+    <div class="slide-num">04</div>
+    <div class="slide-left">
+      <div class="slide-title">
+        <span class="white">创作中</span><br>
+        <span class="green">最上头的时刻</span>
+        <span class="dim">AHA MOMENTS</span>
+      </div>
+    </div>
+    <div class="slide-center">
+      <div class="screenshots-area">
+        <div class="screenshot-card">
+          <div class="screenshot-img">最震撼的 Harvest Round
+幕僚真刀真枪评价你
+
+Paul Graham:
+"你建了大教堂，还没验证
+ 有人想在里面祈祷。"
+
+Steve Jobs:
+"有品味但缺乏痴迷。伟大
+ 的人在验证前就着迷了。"
+
+六祖慧能:
+"转动十二面镜子的轮子
+ 寻找自己的脸。"</div>
+          <div class="screenshot-caption">凌晨4点在硬件室<br>她说：原来有一层、又一层</div>
+        </div>
+        <div class="screenshot-card">
+          <div class="screenshot-img">Facilitator Agent v1.0
+569 lines · verified
+
+Phase 1  → 问题重构
+Phase 2  → NGT独立建仓
+Phase 3  → 冲突提炼 ⭐
+Phase 4  → 结构化辩论
+Phase 5  → Bayesian更新
+Phase 5.5→ Harvest Round
+
+全员：12幕僚并行
+红队：2-3人实时挑战</div>
+          <div class="screenshot-caption">双钻石架构完成<br>569行Facilitator Agent</div>
+        </div>
+        <div class="screenshot-card">
+          <div class="screenshot-img">技术统计
+Agent调用：32次
+12幕僚并行生成：✓
+真实冲突出现：✓
+  (PG vs Jobs, Mao vs Lee)
+假设被挑战：✓
+  (70% → 55%)
+
+这是一个真实跑过的系统。
+不是角色扮演。</div>
+          <div class="screenshot-caption">实测：真实冲突出现<br>Bayesian更新发生</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-right">
+      <div class="tag-row">
+        <span class="tag">NGT独立建仓</span>
+        <span class="tag">冲突提炼</span>
+        <span class="tag">真刀真枪</span>
+        <span class="tag">Harvest Round</span>
+        <span class="tag">跨Session飞轮</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 -->
+  <div class="slide" id="slide5">
+    <div class="slide-num">05</div>
+    <div class="slide-left">
+      <div class="slide-title">
+        <span class="white">后面还会</span><br>
+        <span class="green">继续做吗</span>
+        <span class="dim">WHAT'S NEXT</span>
+      </div>
+    </div>
+    <div class="slide-center">
+      <div class="metrics-area">
+        <div class="metric-block">
+          <div class="metric-arrow">↑</div>
+          <div class="metric-number">12×</div>
+          <div class="metric-desc">视角密度<br>比独自决策多12倍<br>的哲学框架</div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-arrow">↑</div>
+          <div class="metric-number">∞</div>
+          <div class="metric-desc">跨Session飞轮<br>每次回来<br>比上次更准</div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-arrow">↑</div>
+          <div class="metric-number">Day 1</div>
+          <div class="metric-desc">自己就是用户<br>最好的<br>PMF验证</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-right">
+      <div class="desc-line">当然——因为我们自己每天都要用它</div>
+      <div class="desc-line">自己有用，朋友有用</div>
+      <div class="desc-line"><span>价值是自己长出来的，不是设计出来的</span></div>
+      <br>
+      <div class="metric-future">
+        <span>v2</span> 语音交互 + 视觉人格<br>
+        <span>v3</span> Marketplace · 专家Agent入驻<br>你的思维，可以被订阅
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6 -->
+  <div class="slide" id="slide6">
+    <div class="slide-num">06</div>
+    <div class="thanks-area">
+      <div class="thanks-text">THANKS</div>
+      <div class="thanks-sub">12个大脑，同时为你 · 参谋</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="iterate-hint">← 持续迭代中 · 有改动直接 /spark 告诉我 →</div>
+
+<script>
+  function scrollTo(n) {
+    document.getElementById('slide'+n).scrollIntoView({behavior:'smooth'});
+    document.querySelectorAll('.nav button').forEach((b,i) => {
+      b.classList.toggle('active', i === n-1);
+    });
+  }
+  // highlight nav on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting) {
+        const n = e.target.id.replace('slide','');
+        document.querySelectorAll('.nav button').forEach((b,i) => {
+          b.classList.toggle('active', i === parseInt(n)-1);
+        });
+      }
+    });
+  }, {threshold: 0.5});
+  document.querySelectorAll('.slide').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
